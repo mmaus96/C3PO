@@ -10,7 +10,7 @@ source /global/common/software/desi/users/adematti/cosmodesi_environment.sh main
 ### Measuring 2D angular spectra
 
 ## Running chains
-In order to run MCMC fits with Cobaya we first create config files using the "setup_fits.py" script. By running "python setup_fits.py <options>" a yaml file will be created in ./configs/yamls. The yaml file contains everything Cobaya needs for running the chain with desired settings specified by parameters in <options>. The filename (and relative path) can simply be copied into the "Joint_fit_debug.sh" or "Joint_fit_reg.sh" job submission scripts in the line: "srun -n 16 -c 8 cobaya-run ./configs/yamls/<yaml file>". 
+In order to run MCMC fits with Cobaya we first create config files using the "setup_fits.py" script. By running "python setup_fits.py --[settings]" a yaml file will be created in ./configs/yamls. The yaml file contains everything Cobaya needs for running the chain with desired settings specified by parameters in --[settings]. The filename (and relative path) can simply be copied into the "Joint_fit_debug.sh" or "Joint_fit_reg.sh" job submission scripts in the line: "srun -n 16 -c 8 cobaya-run ./configs/yamls/<yaml file>". 
 For example, running:
 python setup_fits.py --likelihoods RSD BAO Cell_specz --tracers_3d BGS LRG1 LRG2 LRG3 --s_tracers BGS LRG1 LRG2 LRG3 --kappa_maps PR4 DR6  --chain_outpath ./chains/test/
 will setup a P(k) + Xi_post(s) + Ckg fit using the BGS and three LRG spectroscopic galaxy samples and Planck PR4 + ACT DR6 CMB lensing maps by creating the file: "fit_LCDM_RSDBAO_BGSLRG1LRG2LRG3_Cell_specz_BGSLRG1LRG2LRG3_PR4DR6.yaml" and then you just begin the fit with 
