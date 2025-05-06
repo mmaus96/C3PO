@@ -1,0 +1,83 @@
+bsig8_QSO:
+  prior:
+    dist: uniform
+    min: 0.5
+    max: 3.0
+  ref:
+    dist: norm
+    loc: 1.13
+    scale: 0.05
+  latex: (1+b_1^{QSO})\sigma_8
+b2sig8_QSO:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: -0.1
+    scale: 0.5
+  latex: b_2\sigma_8^{QSO}
+bssig8_QSO:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: 0.04
+    scale: 0.5
+  latex: b_s\sigma_8^{QSO}
+b3sig8_QSO:
+  value: 0.0
+  latex: b_3\sigma_8^{QSO}
+B1_QSO:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 1.0
+    scale: 0.1
+  latex: B_1^{QSO}
+F_QSO:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 5.0
+    scale: 0.1
+  latex: F^{QSO}
+Sigpar_QSO:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\parallel}^{QSO}
+Sigperp_QSO:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 1.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\perp}^{QSO}
+Sigs_QSO:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 2.0
+    scale: 0.1
+  latex: \Sigma_{s}^{QSO}

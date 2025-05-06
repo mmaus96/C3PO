@@ -1,0 +1,28 @@
+alpha0_LRG1:
+  mean: 0.0
+  std: 12.5
+alpha2_LRG1:
+  mean: 0.0
+  std: 12.5
+# alpha4_LRG1:
+#   mean: 0.0
+#   std: 50.0
+
+SN0_LRG1:
+  mean: 0.0
+  std: 10837.4
+SN2_LRG1:
+  mean: 0.0
+  std: 155912.87528789564
+# SN4_LRG1:
+#   mean: 0.0
+#   std: 5981465.340527901
+
+s0_LRG1:
+  mean: 0.0
+  std: 325.43396451
+s2_LRG1:
+  mean: 0.0
+  std: 20.82689056
+
+

@@ -1,0 +1,46 @@
+alpha0_LRG2:
+  mean: 0.0
+  std: 12.5
+alpha2_LRG2:
+  mean: 0.0
+  std: 12.5
+# alpha4_LRG2:
+#   mean: 0.0
+#   std: 50.0
+SN0_LRG2:
+  mean: 0.0
+  std: 5229.495617747351
+SN2_LRG2:
+  mean: 0.0
+  std: 75234.43797114062
+# SN4_LRG2:
+#   mean: 0.0
+#   std: 6169783.200364036
+
+s0_LRG2:
+  mean: 0.0
+  std: 850.22860709
+s2_LRG2:
+  mean: 0.0
+  std: 47.14141833
+
+M0_LRG2:
+  mean: 0.0
+  std: 500000.0
+M1_LRG2:
+  mean: 0.0
+  std: 500000.0
+Q0_LRG2:
+  mean: 0.0
+  std: 500000.0
+Q1_LRG2:
+  mean: 0.0
+  std: 500000.0
+Q0sp_LRG2:
+  mean: 0.0
+  std: 500000.0
+Q1sp_LRG2:
+  mean: 0.0
+  std: 500000.0
+
+

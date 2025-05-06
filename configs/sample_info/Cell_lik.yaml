@@ -1,0 +1,137 @@
+specz:
+  linear_param_dict_fn: ./configs/params/params_linear_Ckg_specz.yaml
+  basedir: /pscratch/sd/m/mmaus/DESI_RSD_kxg/data/spec_z_dat/
+  covfn: PR4_DR6_DESI_cov/cls_cov_specz_pixel_PR4_DR6_BGS_LRG_FKP_nlbNone_v1.5.json
+  BGS:
+    dndz_fn: dNdz/dNdz_spec_BGS_dz0.01_default.txt
+    zfid: 0.30
+    data_fn:
+      PR4: PR4_DR6_DESI_cl/cl_ggkg_PR4_BGS_v1.5.json
+      DR6: PR4_DR6_DESI_cl/cl_ggkg_DR6_BGS_v1.5.json
+    amin: 7000 #Removes auto from data vectors
+    amax: 0
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 400
+      DR6: 400
+  LRG1:
+    dndz_fn: dNdz/dNdz_spec_LRG1_dz0.01_default.txt
+    zfid: 0.51
+    data_fn:
+      PR4: PR4_DR6_DESI_cl/cl_ggkg_PR4_LRG_z1_FKP_v1.5.json
+      DR6: PR4_DR6_DESI_cl/cl_ggkg_DR6_LRG_z1_FKP_v1.5.json
+    amin: 7000 #Removes auto from data vectors
+    amax: 0
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  LRG2:
+    dndz_fn: dNdz/dNdz_spec_LRG2_dz0.01_default.txt
+    zfid: 0.71
+    data_fn:
+      PR4: PR4_DR6_DESI_cl/cl_ggkg_PR4_LRG_z2_FKP_v1.5.json
+      DR6: PR4_DR6_DESI_cl/cl_ggkg_DR6_LRG_z2_FKP_v1.5.json
+    amin: 7000 #Removes auto from data vectors
+    amax: 0
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  LRG3:
+    dndz_fn: dNdz/dNdz_spec_LRG3_dz0.01_default.txt
+    zfid: 0.92
+    data_fn:
+      PR4: PR4_DR6_DESI_cl/cl_ggkg_PR4_LRG_z3_FKP_v1.5.json
+      DR6: PR4_DR6_DESI_cl/cl_ggkg_DR6_LRG_z3_FKP_v1.5.json
+    amin: 7000 #Removes auto from data vectors
+    amax: 0
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  
+photoz:
+  basedir: /pscratch/sd/m/mmaus/DESI_RSD_kxg/data/photo_z_dat/
+  linear_param_dict_fn: ./configs/params/params_linear_CggCkg_photoz.yaml
+  covfn: Planck_ACT_DESI/bgs+lrg_cross_pr4+dr6_forMark.json
+  pBGS1:
+    alt_nm: BGSz1
+    dndz_fn: dNdz/BGSz1_dNdz.txt
+    fid_SN: 0.463e-6
+    amin: 79
+    amax: 243
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 243
+      DR6: 243
+  pBGS2:
+    alt_nm: BGSz2
+    dndz_fn: dNdz/BGSz2_dNdz.txt
+    fid_SN: 0.918e-6
+    amin: 79
+    amax: 401
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 401
+      DR6: 401
+  pLRG1:
+    alt_nm: LRGz1
+    dndz_fn: dNdz/LRGz1_dNdz.txt
+    fid_SN: 4.07e-6
+    amin: 79
+    amax: 600
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  pLRG2:
+    alt_nm: LRGz2
+    dndz_fn: dNdz/LRGz2_dNdz.txt
+    fid_SN: 2.25e-6
+    amin: 79
+    amax: 600
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  pLRG3:
+    alt_nm: LRGz3
+    dndz_fn: dNdz/LRGz3_dNdz.txt
+    fid_SN: 2.05e-6
+    amin: 79
+    amax: 600
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600
+  pLRG4:
+    alt_nm: LRGz4
+    dndz_fn: dNdz/LRGz4_dNdz.txt
+    fid_SN: 2.25e-6
+    amin: 79
+    amax: 600
+    xmin:
+      PR4: 20
+      DR6: 44
+    xmax:
+      PR4: 600
+      DR6: 600

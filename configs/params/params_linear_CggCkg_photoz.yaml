@@ -1,0 +1,64 @@
+alphaa_pBGS1:
+  mean: 0.0
+  std: 50.0
+alphaa_pBGS2:
+  mean: 0.0
+  std: 50.0
+alphaa_pLRG1:
+  mean: 0.0
+  std: 50.0
+alphaa_pLRG2:
+  mean: 0.0
+  std: 50.0
+alphaa_pLRG3:
+  mean: 0.0
+  std: 50.0
+alphaa_pLRG4:
+  mean: 0.0
+  std: 50.0
+
+epsilon_pBGS1:
+  mean: 0.0
+  std: 2.0
+epsilon_pBGS2:
+  mean: 0.0
+  std: 2.0
+epsilon_pLRG1:
+  mean: 0.0
+  std: 2.0
+epsilon_pLRG2:
+  mean: 0.0
+  std: 2.0
+epsilon_pLRG3:
+  mean: 0.0
+  std: 2.0
+epsilon_pLRG4:
+  mean: 0.0
+  std: 2.0
+
+
+
+SN0_pBGS1:
+  mean: 0.0 #4.07e-6
+  std: 1.389e-07
+  
+SN0_pBGS2:
+  mean: 0.0 #2.25e-6
+  std: 2.754e-07 
+SN0_pLRG1:
+  mean: 0.0 #4.07e-6
+  std: 1.221e-6
+  
+SN0_pLRG2:
+  mean: 0.0 #2.25e-6
+  std: 6.75e-7
+  
+SN0_pLRG3:
+  mean: 0.0 #2.05e-6
+  std: 6.15e-7
+  
+SN0_pLRG4:
+  mean: 0.0 #2.25e-6
+  std: 6.75e-7
+
+

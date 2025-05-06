@@ -1,0 +1,83 @@
+bsig8_ELG:
+  prior:
+    dist: uniform
+    min: 0.5
+    max: 3.0
+  ref:
+    dist: norm
+    loc: 1.13
+    scale: 0.05
+  latex: (1+b_1^{ELG})\sigma_8
+b2sig8_ELG:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: -0.1
+    scale: 0.5
+  latex: b_2\sigma_8^{ELG}
+bssig8_ELG:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: 0.04
+    scale: 0.5
+  latex: b_s\sigma_8^{ELG}
+b3sig8_ELG:
+  value: 0.0
+  latex: b_3\sigma_8^{ELG}
+B1_ELG:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 1.0
+    scale: 0.1
+  latex: B_1^{ELG}
+F_ELG:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 5.0
+    scale: 0.1
+  latex: F^{ELG}
+Sigpar_ELG:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\parallel}^{ELG}
+Sigperp_ELG:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 1.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\perp}^{ELG}
+Sigs_ELG:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 2.0
+    scale: 0.1
+  latex: \Sigma_{s}^{ELG}

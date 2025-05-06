@@ -1,0 +1,31 @@
+class: pk_likelihood_emu_fs_am_tmp2.PkLikelihood
+# basedir: ./data/spec_z_dat/ #specified at frontend
+linear_param_dict_fn: ./configs/params/params_linear_LRG3_FS.yaml
+template_fn: pk_dat/templates_LRG3_desifid.txt
+photo_tmp: False
+zfids:
+- 0.92
+fs_sample_names:
+- LRG3
+fs_datfns:
+- pk_dat/Pk_LRG3_desifid.txt
+covfn: pk_cov/cov_rsd_LRG3_desifid.txt
+fs_matWfns:
+- pk_wmats/wmat_LRG3_desifid.txt
+w_kin_fn: pk_wmats/wmat_xin_LRG3_desifid.txt
+fs_kmins:
+- 0.02
+fs_mmaxs:
+- 0.2
+fs_qmaxs:
+- 0.2
+fs_hmaxs:
+- 0.0
+include_priors: true
+optimize: false
+stop_at_error: true
+cov_fac: 1.0
+invcov_fac: 1.0 
+#invcov_fac: 0.874
+hexa: false
+jeff: false

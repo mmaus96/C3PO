@@ -1,0 +1,42 @@
+# pLRG4
+b1_pLRG4:
+  prior:
+    dist: uniform
+    min:  0.0
+    max:  3.0
+  ref:
+    dist:  norm
+    loc:   1.25
+    scale: 0.05
+  latex: b_1^{pLRG4}
+b2_pLRG4:
+  prior:
+    dist:  uniform
+    min:   -5.0
+    max:   5.0
+  ref:
+    dist:  norm
+    loc:   0.0
+    scale: 0.1
+  latex: b_2^{pLRG4}
+bs_pLRG4:
+  # value: 0.0
+  prior:
+    dist:  norm
+    loc:   0.0
+    scale: 1
+  ref:
+    dist:  norm
+    loc:   0
+    scale: 1.0
+  latex: b_s^{pLRG4}
+
+smag_pLRG4:
+  prior:
+    dist:  norm
+    loc:   0.988
+    scale: 0.1
+  ref:
+    dist:  norm
+    loc:   0.988
+    scale: 0.05

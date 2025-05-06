@@ -1,0 +1,55 @@
+ns:
+  prior:
+    dist: norm
+    loc: 0.9649
+    scale: 0.0042
+  ref:
+    dist: norm
+    loc: 0.965
+    scale: 0.001
+  latex: n_s
+H0:
+  prior:
+    min: 55.0
+    max: 79.0
+  ref:
+    dist: norm
+    loc: 67.36
+    scale: 1.0
+  latex: H_0
+omega_b:
+  prior:
+    dist: norm
+    loc: 0.02218
+    scale: 0.00055
+  ref:
+    dist: norm
+    loc: 0.02237
+    scale: 0.001
+  latex: \Omega_\mathrm{b}h^2
+omega_cdm:
+  prior:
+    min: 0.08
+    max: 0.16
+  ref:
+    dist: norm
+    loc: 0.12
+    scale: 0.05
+  latex: \Omega_\mathrm{cdm}h^2
+logA:
+  prior:
+    dist: uniform
+    min: 2.03
+    max: 4.03
+  ref:
+    dist: norm
+    loc: 3.03694
+    scale: 0.05
+  latex: \log(10^{10} A_\mathrm{s})
+m_ncdm:
+  value: 0.06
+  latex: M_{\nu}
+sigma8:
+  latex: \sigma_8
+omegam:
+  latex: \Omega_\mathrm{m}

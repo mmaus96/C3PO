@@ -1,0 +1,40 @@
+class: FSBAO_likelihood_gc_PkXiemu_am_tmp.JointLikelihood
+# basedir: /pscratch/sd/m/mmaus/DESI_RSD_kxg/data/spec_z_dat/   #Data basedir to be specified in frontend script
+linear_param_dict_fn: ./configs/params/params_linear_QSO_FSBAO.yaml
+template_fn: pk_dat/templates_QSO_desifid.txt
+photo_tmp: True
+zfids:
+- 1.49
+fs_sample_names:
+- QSO
+fs_datfns:
+- pk_dat/Pk_QSO_desifid.txt
+covfn: pk_cov/cov_rsd_BAO_QSO_desifid.txt
+fs_matWfns:
+- pk_wmats/wmat_QSO_desifid.txt
+w_kin_fn: pk_wmats/wmat_xin_QSO_desifid.txt
+fs_kmins:
+- 0.02
+fs_mmaxs:
+- 0.2
+fs_qmaxs:
+- 0.2
+fs_hmaxs:
+- 0.0
+bao_sample_names:
+- QSO
+bao_datfns:
+- pk_dat/Xi_post_QSO_desifid.txt
+bao_rmins:
+- 80.
+bao_rmaxs:
+- 130.
+bao_ells: [0]
+include_priors: true
+optimize: false
+stop_at_error: true
+cov_fac: 1.0
+invcov_fac: 1.0 
+#invcov_fac: 0.874
+hexa: false
+jeff: false

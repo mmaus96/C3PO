@@ -1,0 +1,92 @@
+bsig8_LRG1:
+  prior:
+    dist: uniform
+    min: 0.5
+    max: 3.0
+  ref:
+    dist: norm
+    loc: 1.13
+    scale: 0.05
+  latex: (1+b_1^{LRG1})\sigma_8
+b2sig8_LRG1:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: -0.1
+    scale: 0.5
+  latex: b_2\sigma_8^{LRG1}
+bssig8_LRG1:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 5
+  ref:
+    dist: norm
+    loc: 0.04
+    scale: 0.5
+  latex: b_s\sigma_8^{LRG1}
+b3sig8_LRG1:
+  value: 0.0
+  latex: b_3\sigma_8^{LRG1}
+smag_LRG1:
+  prior:
+    dist: norm
+    loc: 1.016
+    scale: 0.1
+  ref:
+    dist: norm
+    loc: 1.0
+    scale: 0.05
+B1_LRG1:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 1.0
+    scale: 0.1
+  latex: B_1^{LRG1}
+F_LRG1:
+  prior:
+    dist: uniform
+    min: 0.0
+    max: 5.0
+  ref:
+    dist: norm
+    loc: 5.0
+    scale: 0.1
+  latex: F^{LRG1}
+Sigpar_LRG1:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\parallel}^{LRG1}
+Sigperp_LRG1:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 1.0
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.1
+  latex: \Sigma_{\perp}^{LRG1}
+Sigs_LRG1:
+  prior:
+    dist: norm
+    loc: 0.0
+    scale: 2.0
+  ref:
+    dist: norm
+    loc: 2.0
+    scale: 0.1
+  latex: \Sigma_{s}^{LRG1}

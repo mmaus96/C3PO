@@ -1,0 +1,42 @@
+# pBGS1
+b1_pBGS1:
+  prior:
+    dist: uniform
+    min:  -1.0
+    max:  2.0
+  ref:
+    dist:  norm
+    loc:   1.25
+    scale: 0.05
+  latex: b_1^{pBGS1}
+b2_pBGS1:
+  prior:
+    dist:  uniform
+    min:   -5.0
+    max:   5.0
+  ref:
+    dist:  norm
+    loc:   0.0
+    scale: 0.1
+  latex: b_2^{pBGS1}
+bs_pBGS1:
+  # value: 0.0
+  prior:
+    dist:  norm
+    loc:   0.0
+    scale: 1
+  ref:
+    dist:  norm
+    loc:   0
+    scale: 1.0
+  latex: b_s^{pBGS1}
+
+smag_pBGS1:
+  prior:
+    dist:  norm
+    loc:   0.81
+    scale: 0.1
+  ref:
+    dist:  norm
+    loc:   0.81
+    scale: 0.05

@@ -1,0 +1,26 @@
+alpha0_LRG3:
+  mean: 0.0
+  std: 12.5
+alpha2_LRG3:
+  mean: 0.0
+  std: 12.5
+# alpha4_LRG3:
+#   mean: 0.0
+#   std: 50.0
+SN0_LRG3:
+  mean: 0.0
+  std: 16738.4
+SN2_LRG3:
+  mean: 0.0
+  std: 240807.94948224782
+# SN4_LRG3:
+#   mean: 0.0
+#   std: 9238392.922277689
+
+s0_LRG3:
+  mean: 0.0
+  std: 1185.87436427
+s2_LRG3:
+  mean: 0.0
+  std: 60.88968533
+

@@ -1,0 +1,62 @@
+w:
+  prior:
+    min: -2.0
+    max: -0.1
+  ref:
+    dist: norm
+    loc: -1.0
+    scale: 0.05
+  latex: w_0
+wa:
+  prior:
+    min: -3.0
+    max: 0.5
+  ref:
+    dist: norm
+    loc: 0.0
+    scale: 0.05
+  latex: w_{a}
+omegam:
+  prior:
+    dist: uniform
+    min: 0.2
+    max: 0.4
+  ref:
+    dist: norm
+    loc: 0.31519
+    scale: 0.005
+  latex: \Omega_\mathrm{m}
+logA:
+  # value: 3.0363942552728806
+  prior:
+    dist: uniform
+    min:  2.03
+    max:  4.03
+    # min:  1.61
+    # max:  3.91
+  ref:
+    dist:  norm
+    loc:   3.03694
+    scale: 0.05
+  latex: \log(10^{10} A_\mathrm{s})
+As:
+  value: 'lambda logA: 1e-10*np.exp(logA)'
+  latex: A_\mathrm{s}
+# H0_emu:
+#   latex: H_0^{emu}
+H0:
+  latex: H_0
+sig8:
+  latex: \sigma_8
+100*theta_s: 
+  value: 1.0411
+  latex: 100\theta_\mathrm{s}
+m_ncdm:
+  value: 0.06
+  latex: M_{\nu}
+omega_b:
+  value: 0.02237
+  latex: \Omega_\mathrm{b}h^2
+ns:
+  value: 0.9649
+  latex: n_s

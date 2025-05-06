@@ -1,0 +1,27 @@
+alpha0_BGS:
+  mean: 0.0
+  std: 12.5
+alpha2_BGS:
+  mean: 0.0
+  std: 12.5
+# alpha4_BGS:
+#   mean: 0.0
+#   std: 50.0
+SN0_BGS:
+  mean: 0.0
+  std: 12205.4
+SN2_BGS:
+  mean: 0.0
+  std: 117062.45704928496
+# SN4_LRG1:
+#   mean: 0.0
+#   std: 5981465.340527901
+
+s0_BGS:
+  mean: 0.0
+  std: 759.4623044638381
+s2_BGS:
+  mean: 0.0
+  std: 30.34095104519332
+
+

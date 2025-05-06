@@ -1,0 +1,47 @@
+alpha0_ELG:
+  mean: 0.0
+  std: 12.5
+alpha2_ELG:
+  mean: 0.0
+  std: 12.5
+# alpha4_ELG2:
+#   mean: 0.0
+#   std: 50.0
+SN0_ELG:
+  mean: 0.0
+  std: 10691.9799
+SN2_ELG:
+  mean: 0.0
+  std: 25775.30868750001
+
+s0_ELG:
+  mean: 0.0
+  std: 447.4863481047122
+s2_ELG:
+  mean: 0.0
+  std: 8.319407281173527
+
+ph_ELG:
+  mean: 0.0
+  std: 0.2
+
+M0_ELG:
+  mean: 0.0
+  std: 500000.0
+M1_ELG:
+  mean: 0.0
+  std: 500000.0
+Q0_ELG:
+  mean: 0.0
+  std: 500000.0
+Q1_ELG:
+  mean: 0.0
+  std: 500000.0
+Q0sp_ELG:
+  mean: 0.0
+  std: 500000.0
+Q1sp_ELG:
+  mean: 0.0
+  std: 500000.0
+
+
