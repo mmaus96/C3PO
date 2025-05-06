@@ -19,7 +19,7 @@ For example, running:
 
 `python setup_fits.py --likelihoods RSD BAO Cell_specz --tracers_3d BGS LRG1 LRG2 LRG3 --s_tracers BGS LRG1 LRG2 LRG3 --kappa_maps PR4 DR6  --chain_outpath ./chains/test/`
 
-will setup a P(k) + Xi_post(s) + Ckg fit using the BGS and three LRG spectroscopic galaxy samples and Planck PR4 + ACT DR6 CMB lensing maps by creating the file: `fit_LCDM_RSDBAO_BGSLRG1LRG2LRG3_Cell_specz_BGSLRG1LRG2LRG3_PR4DR6.yaml` and then you just begin the fit with 
+will setup a $P_{\ell}(k) + \xi_{\ell}^{\rm post}(s) + C_{\ell}^{\kappa g}$ fit using the BGS and three LRG spectroscopic galaxy samples and Planck PR4 + ACT DR6 CMB lensing maps by creating the file: `fit_LCDM_RSDBAO_BGSLRG1LRG2LRG3_Cell_specz_BGSLRG1LRG2LRG3_PR4DR6.yaml` and then you just begin the fit with 
 
 `srun -n 16 -c 8 cobaya-run ./configs/yamls/fit_LCDM_RSDBAO_BGSLRG1LRG2LRG3_Cell_specz_BGSLRG1LRG2LRG3_PR4DR6.yaml`
 
