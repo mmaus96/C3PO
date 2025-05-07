@@ -1,29 +1,36 @@
 import argparse
 import sys,os
 import numpy as np
-from cobaya.yaml          import yaml_load_file
+from cobaya.yaml          import yaml_load_file # type: ignore
 import yaml
 
 parser = argparse.ArgumentParser()
 
+### What data and likelihoods to include in fits
 parser.add_argument('--likelihoods', nargs='+',   required=True)
 parser.add_argument('--chain_outpath', type=str,   required=True)
 parser.add_argument('--tracers_3d',     nargs='+',   required=True) #Tracers to use for 3D clustering (FS+BAO)
-
 parser.add_argument('--s_tracers',     nargs='+',   required=False,default='all') #Tracers to use for spec-z cross-correlations
 parser.add_argument('--p_tracers',     nargs='+',   required=False,default='all')
 parser.add_argument('--kappa_maps',  nargs='*',   required=False, default = None)
+parser.add_argument('--SNe_sample', type=str,   required=False, default = 'union3')
 
+### What cosmological model to use
+parser.add_argument('--cosmo_model', type=str,   required=False, default = 'LCDM')
+parser.add_argument('--slip',   action='store_true')
+parser.add_argument('--ns_prior', type=float,   required=False, default = 1.0)
+
+### Minimizer settings (if trying to find ML or MAP instead of running MCMC)
 parser.add_argument('--optimize',    action='store_true')
 parser.add_argument('--min_rhoend', type=float, required=False, default=0.01)
+parser.add_argument('--min_seed', type=int, required=False,default=None)
 parser.add_argument('--ignore_lin_priors',    action='store_true')
-parser.add_argument('--cosmo_model', type=str,   required=False, default = 'LCDM')
-parser.add_argument('--jeffrey',    action='store_true')
-parser.add_argument('--rescale_cov', type=float,   required=False, default = 1.0)
-parser.add_argument('--SNe_sample', type=str,   required=False, default = 'union3')
-parser.add_argument('--ns_prior', type=float,   required=False, default = 1.0)
-parser.add_argument('--covmat', type=str,   required=False, default = None)
-parser.add_argument('--debug',    action='store_true')
+
+### Other fit options
+parser.add_argument('--rescale_cov', type=float,   required=False, default = 1.0) #rescale covariance by 1/rescale_cov
+parser.add_argument('--covmat', type=str,   required=False, default = None) #chain.covmat filepath from another fit to speed up convergence
+parser.add_argument('--jeffrey',    action='store_true')  #Partial jeffrey's prior on linear params
+parser.add_argument('--debug',    action='store_true') #Turns on 'debug' setting in cobaya-run for more verbose outputs
 args = parser.parse_args()
 args.include_lin_priors = not args.ignore_lin_priors
 
@@ -96,7 +103,10 @@ def setup_theory(args,info):
             info['theory'][thy_nm] = thy_block 
 
         if 'Cell_specz' in args.likelihoods:
-            thy_nm = 'CggCkg_specz_likelihood_am.Taylor_Cells'
+            if args.slip:
+                thy_nm = 'CggCkg_specz_likelihood_am_slip.Taylor_Cells'
+            else:
+                thy_nm = 'CggCkg_specz_likelihood_am.Taylor_Cells'
             thy_block = {}
             thy_block['zeffs'] = [tracer_zfids[tr] for tr in args.s_tracers]
             thy_block['basedir'] = './data/spec_z_dat/'
@@ -107,7 +117,10 @@ def setup_theory(args,info):
             info['theory'][thy_nm] = thy_block 
         
         if 'Cell_photoz' in args.likelihoods:
-            thy_nm = 'CggCkg_photoz_likelihood_am.Taylor_Cells'
+            if args.slip:
+                thy_nm = 'CggCkg_photoz_likelihood_am_slip.Taylor_Cells'
+            else:
+                thy_nm = 'CggCkg_photoz_likelihood_am.Taylor_Cells'
             thy_block = {}
             thy_block['basedir'] = './data/photo_z_dat/'
             thy_block['gal_sample_names'] = args.p_tracers
@@ -158,7 +171,10 @@ def setup_likelihood(args,info):
         if 'Cell_specz' in args.likelihoods:
             lik_nm = 'Ckg_pr4_dr6_desi_specz'
             lik_block = {}
-            lik_block['class'] = 'CggCkg_specz_likelihood_am.CellLikelihood'
+            if args.slip:
+                lik_block['class'] = 'CggCkg_specz_likelihood_am_slip.CellLikelihood'
+            else:
+                lik_block['class'] = 'CggCkg_specz_likelihood_am.CellLikelihood'
             lik_block['basedir'] = Cell_info['specz']['basedir']
             lik_block['linear_param_dict_fn'] = Cell_info['specz']['linear_param_dict_fn']
             lik_block['zfids'] = [Cell_info['specz'][tr]['zfid'] for tr in args.s_tracers]
@@ -181,7 +197,10 @@ def setup_likelihood(args,info):
         if 'Cell_photoz' in args.likelihoods:
             lik_nm = 'CggCkg_pr4_dr6_desi_photoz'
             lik_block = {}
-            lik_block['class'] = 'CggCkg_photoz_likelihood_am.CellLikelihood'
+            if args.slip:
+                lik_block['class'] = 'CggCkg_photoz_likelihood_am_slip.CellLikelihood'
+            else:
+                lik_block['class'] = 'CggCkg_photoz_likelihood_am.CellLikelihood'
             lik_block['basedir'] = Cell_info['photoz']['basedir']
             lik_block['linear_param_dict_fn'] = Cell_info['photoz']['linear_param_dict_fn']
             lik_block['chenprior'] = True
@@ -267,7 +286,7 @@ def setup_likelihood(args,info):
     return info
 
 ########################## Add Params Block #################################
-
+gamma = {'prior': {'dist': 'uniform', 'min': 0.2, 'max': 1.8}, 'ref': {'dist': 'norm', 'loc': 1.0, 'scale': 0.05},'latex': '\gamma'}
 def setup_params(args,info):
     info['params'] = {}
     blocking = []
@@ -275,6 +294,17 @@ def setup_params(args,info):
     if args.cosmo_model == 'LCDM':
         cosmo_pars = yaml_load_file('./configs/params/params_cosmo_LCDM.yaml')
         cosmo_pars['ns']['prior']['scale'] = cosmo_pars['ns']['prior']['scale']*args.ns_prior
+        info['params'] = cosmo_pars
+        cosmo_pars_sampled = []
+        for p in cosmo_pars.keys():
+            if 'prior' in cosmo_pars[p]:
+                cosmo_pars_sampled.append(p)
+        if args.slip:
+            cosmo_pars['gamma'] = gamma
+            cosmo_pars_sampled.append('gamma')
+        blocking.append([1,cosmo_pars_sampled])
+    if args.cosmo_model == 'w0wa':
+        cosmo_pars = yaml_load_file('./configs/params/params_cosmo_w0wa.yaml')
         info['params'] = cosmo_pars
         cosmo_pars_sampled = []
         for p in cosmo_pars.keys():
@@ -335,7 +365,7 @@ def setup_mcmc(args,info,blocking):
 
 def setup_minimizer(args,info):
     info['sampler'] = {'minimize': {}}
-    info['sampler']['minimize']['seed'] = 1
+    info['sampler']['minimize']['seed'] = args.min_seed
     info['sampler']['minimize']['override_bobyqa'] = {'rhoend': args.min_rhoend}
     if os.path.exists(args.chain_outpath + 'chain.covmat'):
         info['sampler']['minimize']['covmat'] = args.chain_outpath + 'chain.covmat'

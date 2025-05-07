@@ -12,12 +12,12 @@ from scipy.interpolate import interp1d
 from numpy.polynomial.polynomial import polyval
 
 from scipy.special import spherical_jn
-# from scipy.integrate import simps
+# from scipy.integrate import simpson as simps
 
 from likelihoods.pkCodes import pmmHEFT,pgmHEFT,pggHEFT
 from likelihoods.background import classyBackground
 from likelihoods.limber               import limb 
-from likelihoods.pack_data_v2 import pack_cl_wl,pack_cov,pack_dndz,get_scale_cuts
+from likelihoods.pack_data_v2 import *
 from aemulus_heft.heft_emu import NNHEFTEmulator
 
 # from make_pkclass_aba import make_pkclass
@@ -30,42 +30,43 @@ from copy import deepcopy
 
 class CellLikelihood(Likelihood):
     
-    # zfids: list
+    zfids: list
     #sig8: float
     
     basedir: str
     
     gal_sample_names: list
     kappa_sample_names: list
-    alt_nms: list #if names in data json file don't match our convention
 
     # optimize: turn this on when optimizng/running the minimizer so that the Jacobian factor isn't included
     # include_priors: this decides whether the marginalized parameter priors are included (should be yes)
     linear_param_dict_fn: str
     optimize: bool
     include_priors: bool 
-    chenprior: bool
 
-    gal_datfns: list
-    
-    fidSN: list
+    datfns: list
 
     covfn: str
-    cl_pix: bool
+    
     amin: list
     amax: list
     xmin: list
     xmax: list
+        
+    
+    # Cell_lmins: list
+    # Cell_lmaxs: list
     dndzfns: list
     cov_fac: float
     jeff: bool
+    do_auto: bool
 
 
     def initialize(self):
         """Sets up the class."""
         # Redshift Label for theory classes
         # self.zstr = "%.2f" %(self.zfid)
-        print(self.gal_sample_names,self.gal_datfns)
+        print(self.gal_sample_names,self.kappa_sample_names,self.datfns)
 
 	# Load the linear parameters of the theory model theta_a such that
         # P_th = P_{th,nl} + theta_a P^a for some templates P^a we will compute
@@ -75,6 +76,7 @@ class CellLikelihood(Likelihood):
         self.Nlin = len(self.linear_param_dict)
         
         print("We are here!")
+        
         
         #Set fiducial cosmology
         fid_cosmo = [0.02237,0.12,0.9649,np.log(1e10 * 2.0830e-9),67.36,0.06] # omb,omc,ns,ln(1e10 As),H0,Mnu
@@ -86,51 +88,45 @@ class CellLikelihood(Likelihood):
         self.dndz = pack_dndz(dndzs)
         
         # set up the theory prediction class.
-        self.cl_pred = limb(self.dndz, fid, pgmHEFT, pggHEFT, pmmHEFT, classyBackground,lmax=6143, zmin=0.001, zmax=1.8, Nz=80,zeffs=None)
+        self.cl_pred = limb(self.dndz, fid, pgmHEFT, pggHEFT, pmmHEFT, classyBackground,lmax=6000, zmin=0.001, zmax=1.8, Nz=80,zeffs=self.zfids)
          
         self.zeffs = self.cl_pred.zeff
         self.l_thy = self.cl_pred.l
         self.Nl = self.cl_pred.Nl
         self.lmax = np.max(self.l_thy)
         
-        self.names = self.kappa_sample_names + self.gal_sample_names
-        
-        self.Ckg_thy = {}
-        self.Cgg_thy = {}
-        self.Ckg_conv = {}
-        self.Cgg_conv = {}
+        self.names = self.kappa_sample_names + self.gal_sample_names#['k', 'g1', 'g2', 'g3']
 
         
         # process = psutil.Process()
-        # print(f'Current memory usage before loading photo Cell Data: {process.memory_info().rss*1e-9} GB')
+        # print(f'Current memory usage before loading specz Cell Data: {process.memory_info().rss*1e-9} GB')
         self.loadData()
         print('Loaded data!')
         # process = psutil.Process()
-        # print(f'Current memory usage after loading photo Cell Data: {process.memory_info().rss*1e-9} GB')
+        # print(f'Current memory usage after loading specz Cell Data: {process.memory_info().rss*1e-9} GB')
         #
 
     def get_requirements(self):
         
-        req = {'Cell_photo_tables': None,\
-               'b1_E': None,\
+        req = {'Cell_tables': None,\
                # 'ns': None,\
-               # 'w': None,\
+               # # 'w': None,\
                # 'm_ncdm': None,\
                # 'H0': None,\
-               # 'sigma8': None,\
-               # 'omegam': None,\
+               # # 'sigma8': None,\
+               # # 'omegam': None,\
                # 'omega_b': None,\
                # 'omega_cdm': None,\
-               # 'logA': None,\
+               # 'logA': None
               }
         
         # for gal_sample_name in self.gal_sample_names:
         #     req_bias = { \
-        #            # 'bsig8_' + gal_sample_name: None,\
-        #            # 'b1E_' + fs_sample_name: None,\
-        #            # 'b2sig8_' + gal_sample_name: None,\
-        #            # 'bssig8_' + gal_sample_name: None,\
-        #            # 'smag_' + gal_sample_name: None,\
+        #            'bsig8_' + gal_sample_name: None,\
+        #            # 'b1_' + fs_sample_name: None,\
+        #            'b2sig8_' + gal_sample_name: None,\
+        #            'bssig8_' + gal_sample_name: None,\
+        #            'smag_' + gal_sample_name: None,\
         #            # 'b3sig8_' + fs_sample_name: None,\
         #           # 'alpha0_' + fs_sample_name: None,\
         #           #'alpha2_' + fs_sample_name: None,\
@@ -197,7 +193,7 @@ class CellLikelihood(Likelihood):
         
         #print(t2-t1, t3-t2, t4-t3, t5-t4)
         # process = psutil.Process()
-        # print(f'Current memory usage after photoz Cell likelihood evaluation: {process.memory_info().rss*1e-9} GB')
+        # print(f'Current memory usage after specz Cell likelihood evaluation: {process.memory_info().rss*1e-9} GB')
         
         return lnL
     
@@ -230,56 +226,41 @@ class CellLikelihood(Likelihood):
         del cell_data
         return Ckg_dat, Cgg_dat,Wkg,Wgg
     
-    def load_cov_json(self,alt_nms=None):
-
-        if alt_nms != None:
-            gal_names = alt_nms
-        else:
-            gal_names = self.gal_sample_names
-
+    def load_cov_json(self):
         with open(self.basedir + self.covfn, 'r') as file:
             cov_data = json.load(file)
-            
-        # cov = pack_cov(cov_data,['PR4'],['LRGz1','LRGz2','LRGz3','LRGz4'],self.amin,self.amax,[self.xmin],[self.xmax],True)
-        full_cov = pack_cov(cov_data, self.kappa_sample_names, gal_names, \
+        names = self.names
+        Nell = len(cov_data['ell']) #self.Nells
+        
+        full_cov = pack_cov(cov_data, self.kappa_sample_names, self.gal_sample_names, \
                            self.amin,self.amax, self.xmin, self.xmax)
         
         acuts, xcuts = get_scale_cuts(cov_data, self.amin,self.amax, self.xmin, self.xmax)
-        ell = np.array(cov_data['ell'])
+        # Initialize the full covariance matrix of size (3 * Nell, 3 * Nell)
+#         num_gal_fields = len(names) - 1  # Exclude 'k'
+#         full_cov = np.zeros((num_gal_fields * Nell, num_gal_fields * Nell))
+
+#         # Fill in the blocks by looping over all galaxy field combinations
+#         for i in range(1, len(names)):       # Start from 'g1' (ignore 'k')
+#             for j in range(1, len(names)):   # Same here
+#                 key = f'cov_k_{names[i]}_k_{names[j]}'  # Construct key for each cross-covariance
+
+#                 if key in cov_data:
+#                     # Calculate the index range in the full matrix for this (i, j) block
+#                     row_start, row_end = (i - 1) * Nell, i * Nell
+#                     col_start, col_end = (j - 1) * Nell, j * Nell
+
+#                     # Fill the full covariance matrix with the corresponding covariance block
+#                     full_cov[row_start:row_end, col_start:col_end] = cov_data[key]
+#                     #symmetrize
+#                     if i != j: 
+#                         full_cov[col_start:col_end,row_start:row_end] = cov_data[key]
         
-        if self.cl_pix: #Also take C_ells from this file
-            wla,wlx,odata = pack_cl_wl(cov_data, self.kappa_sample_names, gal_names, \
-                           self.amin,self.amax, self.xmin, self.xmax)
-            # print(np.shape(wlx))
-            self.dd = odata
-            self.Wggs = {}
-            self.Wkgs = {}
-            self.ldats = {}
-            self.Cgg_dats = {}
-            self.Ckg_dats = {}
-            self.pixwin = np.array(cov_data['pixwin'])
-            
-            
-            Nl = len(self.l_thy)
-            # if len(self.kappa_sample_names)==1: #Update once including DR6
-            #     wlx= wlx[0]
-            
-            for ii,gname in enumerate(gal_names):
-                for jj,kname in enumerate(self.kappa_sample_names):
-                    sname = f'{kname}_{gname}'
-                    sname2 = f'{kname}_{self.gal_sample_names[ii]}'
-                    self.Wkgs[sname2] = wlx[jj][ii]
-                    self.ldats[sname2] = ell[xcuts[jj][ii]]
-                    self.Ckg_dats[sname2] = np.array(cov_data[f'cl_{sname}'])[xcuts[jj][ii]]
-                    
-                    
-                self.Cgg_dats[self.gal_sample_names[ii]] =  np.array(cov_data[f'cl_{gname}_{gname}'])[acuts[ii]]
-                self.Wggs[self.gal_sample_names[ii]] = wla[ii]
-        else: #Only need mc correction to apply to DirectSHT Cells
-            self.mc_corr = {}
-            for i,gname in enumerate(gal_names):
-                for j,kname in enumerate(self.kappa_sample_names):
-                    self.mc_corr[f'{kname}_{self.gal_sample_names[i]}'] = np.array(cov_data[f'mccorr_{kname}_{gname}'])[xcuts[j][i]]
+        
+        self.mc_corr = {}
+        for i,gname in enumerate(self.gal_sample_names):
+            for j,kname in enumerate(self.kappa_sample_names):
+                self.mc_corr[f'{kname}_{gname}'] = np.array(cov_data[f'mccorr_{kname}_{gname}'])[xcuts[j][i]]
                         
         return full_cov
 
@@ -294,111 +275,103 @@ class CellLikelihood(Likelihood):
         
         """
         
-
-
-        # First load the covariance matrix.
-        if not self.alt_nms:
-            cov = self.load_cov_json()/self.cov_fac
-        else:
-            cov = self.load_cov_json(self.alt_nms)/self.cov_fac
-            print('cov loaded successfully with alt_nms')
-            
-
-        # Copy it and save the inverse.
-        self.cov  = cov
-        self.cinv = np.linalg.inv(self.cov)
+        #First load the covariance matrix.
+        cov = self.load_cov_json()/self.cov_fac
+        
+        
+        
+        # Now load the data
         
         #data ells, Cells, and mode-coupling/window matrix from catalog-based Cell file
+        self.ldats = {}
+        self.Ckg_dats = {}
+        self.Cgg_dats = {}
+        self.Wkgs = {}
+        self.Wggs = {}
         
-        #If using pixel-based Cells then all data and windows are in the cov file
-        if not self.cl_pix: 
-            self.ldats = {}
-            self.Ckg_dats = {}
-            self.Cgg_dats = {}
-            self.Wkgs = {}
-            self.Wggs = {}
-            
-            # for ii, datfn in enumerate(self.datfns):
-            for ii,gname in enumerate(self.gal_sample_names):
-                for jj,kname in enumerate(self.kappa_sample_names):
-                    datfn = self.gal_datfns[ii][jj]
-                    Ckg_dat, Cgg_dat,Wkg,Wgg = self.load_cell_json(self.basedir + datfn,gname,kname,ii,jj)
-                    sname = f'{kname}_{gname}'
-                    
-                    # self.ldats[sname] = ells
-                    self.Ckg_dats[sname] = Ckg_dat*self.mc_corr[sname]
-                    self.Wkgs[sname] = Wkg
-                self.Cgg_dats[gname] = Cgg_dat
-                self.Wggs[gname] = Wgg
-            
-            # Join the data vectors together
-            self.dd = []        
-            for gname in self.gal_sample_names:
-                self.dd = np.concatenate( (self.dd, self.Cgg_dats[gname]) )
-                for kname in self.kappa_sample_names:
-                    self.dd = np.concatenate((self.dd, self.Ckg_dats[f'{kname}_{gname}']))
-        
+        # for ii, datfn in enumerate(self.datfns):
+        for ii,gname in enumerate(self.gal_sample_names):
+            for jj,kname in enumerate(self.kappa_sample_names):
+                datfn = self.datfns[ii][jj]
+                Ckg_dat, Cgg_dat,Wkg,Wgg = self.load_cell_json(self.basedir + datfn,gname,kname,ii,jj)
+                sname = f'{kname}_{gname}'
                 
+                # self.ldats[sname] = ells
+                self.Ckg_dats[sname] = Ckg_dat*self.mc_corr[sname]
+                self.Wkgs[sname] = Wkg
+            self.Cgg_dats[gname] = Cgg_dat
+            self.Wggs[gname] = Wgg
+        
+        # Join the data vectors together
+        self.dd = []        
+        for gname in self.gal_sample_names:
+            self.dd = np.concatenate( (self.dd, self.Cgg_dats[gname]) )
+            for kname in self.kappa_sample_names:
+                self.dd = np.concatenate((self.dd, self.Ckg_dats[f'{kname}_{gname}']))
+        
+        
+        
+        
+        # We're only going to want some of the entries in computing chi^2.
+        
+#         # this is going to tell us how many indices to skip to get to the nth multipole
+#         startii = 0
+        
+#         for ss, sample_name in enumerate(self.gal_sample_names):
+            
+#             lcut = (self.ldats[sample_name] > self.Cell_lmaxs[ss])\
+#                           | (self.ldats[sample_name] < self.Cell_lmins[ss])
+            
+#             for i in np.nonzero(lcut)[0]:     # FS Monopole.
+#                 ii = i + startii
+#                 cov[ii, :] = 0
+#                 cov[ :,ii] = 0
+#                 cov[ii,ii] = 1e25
+            
+#             startii += self.ldats[sample_name].size
+            
+        
         # Copy it and save the inverse.
         self.cov  = cov
         self.cinv = np.linalg.inv(self.cov)
         #print(self.sample_name, np.diag(self.cinv)[:10])
         
-      
+        
+        
+    def get_cosmo_parameters(self):
+        pp  = self.provider
+        omb = pp.get_param('omega_b')
+        omc = pp.get_param('omega_cdm')
+        ns  = pp.get_param('ns')
+        logAs  = pp.get_param('logA')
+        H0  = pp.get_param('H0')
+        Mnu = pp.get_param('m_ncdm')
+        return omb,omc,ns,logAs,H0,Mnu
     
     def Cell_predict(self, gal_sample_name,z_ind,zeff, thetas=None):
         """Use the Aemulus emulator to compute C_ell, given biases etc."""
         
         pp   = self.provider
         # zstr = "%.2f" %(zeff)
-        Cell_tables = pp.get_result('Cell_photo_tables')
-        E_biases = pp.get_result('b1_E')
-        b1_E = E_biases[gal_sample_name]
+        Cell_tables = pp.get_result('Cell_tables')
         
         # Cgg and Ckg are tables of shape (nell,4)
         # where the four columns correspond to 
         # 1, alpha_auto, shot noise, alpha_cross
+        Cgg = Cell_tables[gal_sample_name]['auto'] 
         Ckg = Cell_tables[gal_sample_name]['cross']
-        Cgg = Cell_tables[gal_sample_name]['auto']
         
-
+        
        # Instead of calling the linear parameters directly we will now analytically marginalize over them
         
         if thetas is None:
-            alphaa = self.linear_param_means['alphaa_' + gal_sample_name]
-            if self.chenprior:
-                epsilon = self.linear_param_means['epsilon_' + gal_sample_name]
-                # Cgg[:,1] += Cgg[:,3]/(2.*(b1_E))
-                # Ckg[:,1] += Ckg[:,3]/(2.*(b1_E))
-                alphax = alphaa/(2*b1_E) + epsilon
-            else:
-                alphax = self.linear_param_means['alphax_' + gal_sample_name]
-            
-            sn0 = self.linear_param_means['SN0_' + gal_sample_name]
+            alphax = self.linear_param_means['alphax_' + gal_sample_name]
+            # sn0 = self.linear_param_means['SN0_' + gal_sample_name]
         else:
-            alphaa = thetas['alphaa_' + gal_sample_name]
-            if self.chenprior:
-                epsilon = thetas['epsilon_' + gal_sample_name]
-                alphax = alphaa/(2*b1_E) + epsilon
-                # Cgg[:,1] += Cgg[:,3]/(2.*(b1_E))
-                # Ckg[:,1] += Ckg[:,3]/(2.*(b1_E))
-            else:
-                alphax = thetas['alphax_' + gal_sample_name]
-            sn0 = thetas['SN0_' + gal_sample_name]
-
-        if self.cl_pix:
-            sn_fid = self.fidSN[z_ind]
-            monomials = np.array([1.,alphaa,sn_fid+sn0,alphax])
-
-            Nkg = Ckg.shape[0] ; Ngg = Cgg.shape[0]
-            # correct for pixel window function
-            # shot noise is left untouched
-            pixwin_idxs = [0,1,3] 
-            for idx in pixwin_idxs:
-                Ckg[:,idx] = Ckg[:,idx]*self.pixwin[:Nkg]
-                Cgg[:,idx] = Cgg[:,idx]*self.pixwin[:Ngg]**2
-        else:
-            monomials = np.array([1.,alphaa,sn0,alphax])
+            alphax = thetas['alphax_' + gal_sample_name]
+            # sn0 = thetas['SN0_' + gal_sample_name]
+        
+        monomials = np.array([1.,0.,0.,alphax])
         
         thy_gg = np.dot(Cgg,monomials)
         thy_kg = np.dot(Ckg,monomials)
@@ -408,7 +381,9 @@ class CellLikelihood(Likelihood):
             sname = f'{kappa_sample_name}_{gal_sample_name}'
             conv = np.concatenate((conv, np.dot(self.Wkgs[sname],thy_kg)))
         
-        return conv #np.concatenate((Cgg_conv,Ckg_conv))
+        # Mmat = self.matMs[gal_sample_name]
+        
+        return conv #np.matmul(Mmat,thy)
 
 
 
@@ -416,10 +391,11 @@ class Taylor_Cells(Theory):
     """
     A class to return a set of derivatives for the Taylor series of sigma8, Dz, fz.
     """
-    # zeffs: list
+    zeffs: list
     basedir: str
     gal_sample_names: list
     dndzfns: list
+    do_auto: bool
     
     def initialize(self):
         """Sets up the class by loading the derivative matrices."""
@@ -436,9 +412,7 @@ class Taylor_Cells(Theory):
         self.dndz = pack_dndz(dndzs)
         
         # set up the theory prediction class.
-        self.cl_pred = limb(self.dndz, fid, pgmHEFT, pggHEFT, pmmHEFT, classyBackground,lmax=6143, zmin=0.001, zmax=1.8, Nz=80,zeffs=None)
-        self.zeffs = self.cl_pred.zeff
-        
+        self.cl_pred = limb(self.dndz, fid, pgmHEFT, pggHEFT, pmmHEFT, classyBackground,lmax=6000, zmin=0.001, zmax=1.8, Nz=80,zeffs=self.zeffs)
         
     
     def get_requirements(self):
@@ -457,12 +431,15 @@ class Taylor_Cells(Theory):
                'H0': None,\
                'logA': None,\
                'm_ncdm': None,\
+               'gamma': None,\
               }
+        
         for gal_sample_name in self.gal_sample_names:
             req_bias = { \
-                   'b1_' + gal_sample_name: None,\
-                   'b2_' + gal_sample_name: None,\
-                   'bs_' + gal_sample_name: None,\
+                   'bsig8_' + gal_sample_name: None,\
+                   # 'b1_' + fs_sample_name: None,\
+                   'b2sig8_' + gal_sample_name: None,\
+                   'bssig8_' + gal_sample_name: None,\
                    'smag_' + gal_sample_name: None,\
                    }
             req = {**req, **req_bias}
@@ -477,14 +454,15 @@ class Taylor_Cells(Theory):
         logAs  = pp.get_param('logA')
         H0  = pp.get_param('H0')
         Mnu = pp.get_param('m_ncdm')
-        return omb,omc,ns,logAs,H0,Mnu
+        gamma = pp.get_param('gamma')
+        return omb,omc,ns,logAs,H0,Mnu,gamma
     
     def get_can_provide(self):
         """What do we provide: a dictionary with tables for Cells."""
-        return ['Cell_photo_tables','b1_E']
+        return ['Cell_tables']
     
-    def get_can_provide_params(self):
-        return ['sigma80','omegam0']
+    # def get_can_provide_params(self):
+    #     return ['sigma8','omegam']
     
     def calculate(self, state, want_derived=True, **params_values_dict):
         """
@@ -492,43 +470,40 @@ class Taylor_Cells(Theory):
         """
         pp   = self.provider
         
-        omb,omc,ns,logAs,H0,Mnu = self.get_cosmo_parameters()
+        omb,omc,ns,logAs,H0,Mnu,gamma = self.get_cosmo_parameters()
         As = np.exp(logAs)*1e-10 
-        
-        params = np.array([omb,omc,-1.0,ns, As,H0,np.log10(Mnu),0])[self.nnemu.param_order] 
-        sig8_0 = self.nnemu.sigma8z_emu(params)[0]
-        hub = H0/100.
-        OmM = (omc + omb + 0.0006442)/hub**2
-        
+        ck = (1+gamma)/2
         
         Cell_tables = {}
-        b1E = {}
         
         for ii,gal_sample_name in enumerate(self.gal_sample_names):
             zeff = self.zeffs[ii]
             zstr = "%.2f" %(zeff)
             
             params = np.array([omb,omc,-1.0,ns, As,H0,np.log10(Mnu),zeff])[self.nnemu.param_order] 
-            # sig8_z = self.nnemu.sigma8z_emu(params)[0]
+            sig8_z = self.nnemu.sigma8z_emu(params)[0]
             
-            b1   = pp.get_param('b1_' + gal_sample_name)#/sig8_z - 1
+            b1   = pp.get_param('bsig8_' + gal_sample_name)/sig8_z - 1
             # b1   = pp.get_param('b1_' + fs_sample_name)
-            b2   = pp.get_param('b2_' + gal_sample_name)#/(sig8_z**2)
-            bs   = pp.get_param('bs_' + gal_sample_name)#/(sig8_z**2)
+            b2   = pp.get_param('b2sig8_' + gal_sample_name)/(sig8_z**2)
+            bs   = pp.get_param('bssig8_' + gal_sample_name)/(sig8_z**2)
             smag = pp.get_param('smag_' + gal_sample_name)
-            b1E[gal_sample_name] = 1+b1
+
+            smag_new = ck**2 * smag - (2./5.) *(ck**2 - 1)
             
             params = np.array([omb,omc,ns,logAs,H0,Mnu,b1,b2,bs])
             
-            Cgg,Ckg = self.cl_pred.computeCggCkg(ii,params,smag)
             Cell_tables[gal_sample_name] = {}
             
-            Cell_tables[gal_sample_name]['cross'] = Ckg
-            Cell_tables[gal_sample_name]['auto'] = Cgg
+            if self.do_auto:
+                Cgg,Ckg = self.cl_pred.computeCggCkg(ii,params,smag_new)
+                Cell_tables[gal_sample_name]['auto'] = Cgg
+                Cell_tables[gal_sample_name]['cross'] = ck*Ckg
+            else:
+                Ckg = self.cl_pred.computeCkg(ii,params,smag_new)
+                Cell_tables[gal_sample_name]['auto'] = ck*Ckg #will not be used
+                Cell_tables[gal_sample_name]['cross'] = Ckg
             
-        state['Cell_photo_tables'] = Cell_tables
-        state['derived']['sigma80'] = sig8_0
-        state['derived']['omegam0'] = OmM
-        state['b1_E'] = b1E
+        state['Cell_tables'] = Cell_tables
         # process = psutil.Process()
-        # print(f'Current memory usage after photoz Cell theory evaluation: {process.memory_info().rss*1e-9} GB')
+        # print(f'Current memory usage after specz Cell theory evaluation: {process.memory_info().rss*1e-9} GB')

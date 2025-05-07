@@ -457,6 +457,7 @@ class Taylor_Cells(Theory):
                'H0': None,\
                'logA': None,\
                'm_ncdm': None,\
+               'gamma': None,\
               }
         for gal_sample_name in self.gal_sample_names:
             req_bias = { \
@@ -477,7 +478,8 @@ class Taylor_Cells(Theory):
         logAs  = pp.get_param('logA')
         H0  = pp.get_param('H0')
         Mnu = pp.get_param('m_ncdm')
-        return omb,omc,ns,logAs,H0,Mnu
+        gamma = pp.get_param('gamma')
+        return omb,omc,ns,logAs,H0,Mnu,gamma
     
     def get_can_provide(self):
         """What do we provide: a dictionary with tables for Cells."""
@@ -492,14 +494,14 @@ class Taylor_Cells(Theory):
         """
         pp   = self.provider
         
-        omb,omc,ns,logAs,H0,Mnu = self.get_cosmo_parameters()
+        omb,omc,ns,logAs,H0,Mnu,gamma = self.get_cosmo_parameters()
         As = np.exp(logAs)*1e-10 
         
         params = np.array([omb,omc,-1.0,ns, As,H0,np.log10(Mnu),0])[self.nnemu.param_order] 
         sig8_0 = self.nnemu.sigma8z_emu(params)[0]
         hub = H0/100.
         OmM = (omc + omb + 0.0006442)/hub**2
-        
+        ck = (1+gamma)/2
         
         Cell_tables = {}
         b1E = {}
@@ -517,13 +519,15 @@ class Taylor_Cells(Theory):
             bs   = pp.get_param('bs_' + gal_sample_name)#/(sig8_z**2)
             smag = pp.get_param('smag_' + gal_sample_name)
             b1E[gal_sample_name] = 1+b1
+
+            smag_new = ck**2 * smag - 2/5 *(ck**2 - 1)
             
             params = np.array([omb,omc,ns,logAs,H0,Mnu,b1,b2,bs])
             
-            Cgg,Ckg = self.cl_pred.computeCggCkg(ii,params,smag)
+            Cgg,Ckg = self.cl_pred.computeCggCkg(ii,params,smag_new)
             Cell_tables[gal_sample_name] = {}
             
-            Cell_tables[gal_sample_name]['cross'] = Ckg
+            Cell_tables[gal_sample_name]['cross'] = ck*Ckg
             Cell_tables[gal_sample_name]['auto'] = Cgg
             
         state['Cell_photo_tables'] = Cell_tables
