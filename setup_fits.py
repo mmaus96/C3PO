@@ -424,7 +424,8 @@ if args.optimize:
     info = setup_minimizer(args,info)
 else:
     info = setup_mcmc(args,info,blocking)
-
+if not os.path.exists('./chains'):
+    os.mkdir('./chains')
 if os.path.exists(args.chain_outpath):
     if not os.listdir(args.chain_outpath):
         print("Found empty destination directory: ",args.chain_outpath)
